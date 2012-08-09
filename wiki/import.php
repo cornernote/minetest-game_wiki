@@ -1,6 +1,9 @@
 <?php
+$resume = empty($_GET['resume']) ? false : true;
+if(!count(glob('data/wikidata/*.json'))) $resume = true;
+
 // remove existing database
-if (empty($_GET['resume'])) {
+if (!$resume) {
     if (file_exists('data/wiki.db')) {
         if (file_exists('data/wiki.bak.db')) {
             unlink('data/wiki.bak.db');
@@ -29,9 +32,8 @@ require('globals.php');
 
     <p>
         <?php
-
         // create database
-        if (empty($_GET['resume'])) {
+        if (!$resume) {
 
             $GLOBALS['db']->query('CREATE TABLE "abm" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT)');
             $GLOBALS['db']->query('CREATE INDEX "main"."abm.mod" ON "abm" ("mod")');
@@ -67,7 +69,7 @@ require('globals.php');
 
         // register_abm
         echo '<h2>ABM</h2>';
-        foreach (glob($GLOBALS['path'] . '/builtin/wikidata/register_abm.*.*.json') as $filename) {
+        foreach (glob('data/wikidata/register_abm.*.*.json') as $filename) {
             echo 'importing: <b>' . $filename . '</b><br/>';
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
@@ -86,7 +88,7 @@ require('globals.php');
 
         // register_alias
         echo '<h2>Alias</h2>';
-        foreach (glob($GLOBALS['path'] . '/builtin/wikidata/register_alias.*.*.json') as $filename) {
+        foreach (glob('data/wikidata/register_alias.*.*.json') as $filename) {
             echo 'importing: <b>' . $filename . '</b><br/>';
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
@@ -102,7 +104,7 @@ require('globals.php');
 
         // register_craft
         echo '<h2>Craft</h2>';
-        foreach (glob($GLOBALS['path'] . '/builtin/wikidata/register_craft.*.*.json') as $filename) {
+        foreach (glob('data/wikidata/register_craft.*.*.json') as $filename) {
             echo 'importing: <b>' . $filename . '</b><br/>';
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
@@ -124,7 +126,7 @@ require('globals.php');
 
         // register_entity
         echo '<h2>Entity</h2>';
-        foreach (glob($GLOBALS['path'] . '/builtin/wikidata/register_entity.*.*.json') as $filename) {
+        foreach (glob('data/wikidata/register_entity.*.*.json') as $filename) {
             echo 'importing: <b>' . $filename . '</b><br/>';
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
@@ -136,7 +138,7 @@ require('globals.php');
 
         // register_item
         echo '<h2>Item</h2>';
-        foreach (glob($GLOBALS['path'] . '/builtin/wikidata/register_item.*.*.json') as $filename) {
+        foreach (glob('data/wikidata/register_item.*.*.json') as $filename) {
             echo 'importing: <b>' . $filename . '</b><br/>';
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
