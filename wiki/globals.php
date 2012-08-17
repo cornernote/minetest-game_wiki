@@ -75,13 +75,13 @@ function item_image($item, $options = array())
 {
     $file = false;
     if (!$file && !empty($item['name'])) {
-        $file = 'itemcubes/' . str_replace('=', '', base64_encode($item['name'])) . '.png';
+        $file = 'itemcubes/' . str_replace(':', '-', $item['name']) . '.png';
         if (!file_exists($file))
             $file = false;
     }
     if (!$file && !empty($item['image'])) {
         if (substr($item['image'], 0, 14) == '[inventorycube') {
-            $file = 'itemcubes/' . str_replace('=', '', base64_encode($item['image'])) . '.png';
+            $file = 'itemcubes/' . str_replace(array('[inventorycube','.png'), '', base64_encode($item['image'])) . '.png';
             if (!file_exists($file))
                 return '';
         }

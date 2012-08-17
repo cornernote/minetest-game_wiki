@@ -19,7 +19,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "tile.h"
 #include "debug.h"
-#include "base64.h" // WIKI IMAGE EXTRACT
 #include "main.h" // for g_settings
 #include "filesys.h"
 #include "settings.h"
@@ -33,6 +32,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/container.h"
 #include "util/thread.h"
 #include "util/numeric.h"
+
+// BEGIN WIKI IMAGE EXTRACT
+#include <string>
+#include <iostream>
+#include <algorithm>
+std::string myreplace(std::string &s, std::string toReplace, std::string replaceWith)
+{
+	return(s.replace(s.find(toReplace), toReplace.length(), replaceWith));
+}
+// END WIKI IMAGE EXTRACT
 
 /*
 	A cache from texture name to texture path
@@ -1615,12 +1624,15 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 
 				// BEGIN WIKI IMAGE EXTRACT
 				infostream<<"part_of_name = "<<part_of_name<<std::endl;
-				irr::c8 filename[1024];
-				std::string se = base64_encode(reinterpret_cast<const unsigned char*>(part_of_name.c_str()), part_of_name.length());
-				snprintf(filename, 1024, "itemcubes/%s.png", se);
+				std::string se(part_of_name);
+				myreplace(se,":","-");
+				myreplace(se,"[inventorycube","");
+				myreplace(se,".png","");
+				irr::c8 filename[250];
+				snprintf(filename, 250, "itemcubes/%s.png", se.c_str());
 				driver->writeImageToFile(baseimg, filename);
 				// END WIKI IMAGE EXTRACT
-
+				
 			}
 		}
 		/*
@@ -1708,7 +1720,6 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 			errorstream<<"generate_image(): Invalid "
 					" modification: \""<<part_of_name<<"\""<<std::endl;
 		}
-				
 	}
 
 	return true;

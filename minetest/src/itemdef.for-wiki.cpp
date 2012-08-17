@@ -20,12 +20,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 #include "itemdef.h"
 
-#include "base64.h" // WIKI IMAGE EXTRACT
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <tchar.h>
-
 #include "gamedef.h"
 #include "nodedef.h"
 #include "tool.h"
@@ -39,6 +33,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "util/serialize.h"
 #include <map>
 #include <set>
+
+// BEGIN WIKI IMAGE EXTRACT
+#include <string>
+#include <iostream>
+#include <algorithm>
+// END WIKI IMAGE EXTRACT
 
 /*
 	ItemDefinition
@@ -471,15 +471,11 @@ public:
 						  );
 						def->inventory_texture->unlock();
 						if(wiki_image != NULL) {
-
-							//std::string se = def->name;
-							//for (int i = 0; i < se.length(); ++i)  if (se[i] == ':') se[i] = '_';
-							std::string se = base64_encode(reinterpret_cast<const unsigned char*>(def->name.c_str()), def->name.length());
-
-							irr::c8 filename[200];
-							snprintf(filename, 200, "itemcubes/%s.png", se); 
+							std::string se(def->name);
+							std::replace(se.begin(), se.end(), ':', '-');
+							irr::c8 filename[250];
+							snprintf(filename, 200, "itemcubes/%s.png", se.c_str());
 							driver->writeImageToFile(wiki_image, filename);
-							
 							wiki_image->drop();
 						}
 					}
@@ -565,8 +561,3 @@ IWritableItemDefManager* createItemDefManager()
 	return new CItemDefManager();
 }
 
-void SignalHandler(int signal)
-{
-    printf("Signal %d",signal);
-    throw "!Access Violation!";
-}
