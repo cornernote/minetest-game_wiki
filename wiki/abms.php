@@ -34,7 +34,7 @@
                     echo item($nodename);
                     echo '</li>';
                 }
-                else {
+                elseif (isset($data->nodenames)) {
                     echo '<li>';
                     echo item($data->nodenames);
                     echo '</li>';
@@ -61,7 +61,7 @@
         }
         echo '</div></ul>';
         echo '</td>';
-        echo '<td>' . $data->options->chance . ' / ' . $data->options->interval . '</td>';
+        echo '<td>' . (isset($data->options->chance) ? $data->options->chance : '?') . ' / ' . (isset($data->options->interval) ? $data->options->interval : '?') . '</td>';
         echo '<td><a href="abm.php?id=' . $row['id'] . '" class="btn">view abm</a></td>';
         echo '</tr>';
     }

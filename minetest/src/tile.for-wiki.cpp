@@ -1623,11 +1623,10 @@ bool generate_image(std::string part_of_name, video::IImage *& baseimg,
 				image->drop();
 
 				// BEGIN WIKI IMAGE EXTRACT
-				infostream<<"part_of_name = "<<part_of_name<<std::endl;
+				infostream<<"WIKI IMAGE EXTRACT: part_of_name = '"<<part_of_name<<"'"<<std::endl;
 				std::string se(part_of_name);
-				myreplace(se,":","-");
-				myreplace(se,"[inventorycube","");
-				myreplace(se,".png","");
+				//myreplace(se,"[inventorycube","");
+				//myreplace(se,".png","");
 				irr::c8 filename[250];
 				snprintf(filename, 250, "itemcubes/%s.png", se.c_str());
 				driver->writeImageToFile(baseimg, filename);

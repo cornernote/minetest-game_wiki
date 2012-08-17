@@ -12,7 +12,7 @@
 
     <?php
     $mods = array();
-    $q = $GLOBALS['db']->query('SELECT mod FROM "item" GROUP BY mod ORDER BY mod');
+    $q = $GLOBALS['db']->query('SELECT mod FROM "item" WHERE mod!="unknown" AND mod!="" GROUP BY mod ORDER BY mod');
     while ($row = $q->fetchArray()) {
         $mods[] = $row['mod'];
     }

@@ -474,7 +474,7 @@ public:
 							std::string se(def->name);
 							std::replace(se.begin(), se.end(), ':', '-');
 							irr::c8 filename[250];
-							snprintf(filename, 200, "itemcubes/%s.png", se.c_str());
+							snprintf(filename, 250, "itemcubes/%s.png", se.c_str());
 							driver->writeImageToFile(wiki_image, filename);
 							wiki_image->drop();
 						}

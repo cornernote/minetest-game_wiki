@@ -59,7 +59,7 @@ function image($image, $options = array())
     //    }
     //}
     if (!file_exists('textures/' . $image)) {
-        //debug('cant find: ' . $image);
+        debug('cant find: ' . $image);
         return '';
     }
     $width = $height = '';
@@ -81,7 +81,7 @@ function item_image($item, $options = array())
     }
     if (!$file && !empty($item['image'])) {
         if (substr($item['image'], 0, 14) == '[inventorycube') {
-            $file = 'itemcubes/' . str_replace(array('[inventorycube','.png'), '', base64_encode($item['image'])) . '.png';
+            $file = 'itemcubes/' . $item['image'] . '.png';
             if (!file_exists($file))
                 return '';
         }
