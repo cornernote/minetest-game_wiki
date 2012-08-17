@@ -48,6 +48,7 @@ end
 -- save json data to file
 wikiSaveJson = function(name, counter, data)
 	local modname = minetest.get_current_modname();
+	if modname==nil then modname="" end
 	local json = JSON:encode(data)
 	io.output(io.open(minetest.get_modpath("__builtin").."/wikidata/"..name.."."..modname.."."..counter..".json","w"))
 	io.write(json)

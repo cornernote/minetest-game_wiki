@@ -62,7 +62,7 @@ GAMEWIKI (website to display wiki):
 /wiki/                          -- this folder needs to be uploaded to your php5/sqlite3 website
   bootstrap/                    -- twitter bootstrap (site:http://twitter.github.com/bootstrap/) (license:http://www.apache.org/licenses/LICENSE-2.0)
   data/                         -- sqlite data
-    allmods.db                  -- sqlite3 database containing many mods
+    wikidata/                   -- import json files go here before running import.php
     wiki.db                     -- sqlite3 database containing default mods
   textures/                     -- put your textures here
   config.php                    -- !!! IMPORTANT !!! - you need to edit the path to minetest if generating your own database
@@ -86,21 +86,19 @@ INSTALL (generate your own mods database)
 
 1) Copy /minetest/* to your minetest folder - nothing should be replaced
 
-2) We need to add a line to /minetest/builtin/misc_register.lua using one of the following:
-2.a) Rename misc_register.for-wiki.lua to misc_register.lua (backup your old file first!)
-OR
-2.b) Add this line to misc_register.lua (just above "Built-in node definitions"):
+2) We need to add a line to /minetest/builtin/builtin.lua: (just under "misc_register.lua"):
 dofile(minetest.get_modpath("__builtin").."/wiki.lua")
 
 3) Open minetest  
 - This will create the JSON data
 - You should see a lot of files being created in /minetest/builtin/wikidata/
+- Once done, move the files to /wiki/data/wikidata/
 
 4) Edit config.php and set the path to minetest - there is no need to change the database name
 
 5) Open import.php in a web browser  
 - This will import the JSON data into an SQLite3 database
-- You should notice the files being removed from /minetest/builtin/wikidata/
+- You should notice the files being removed from /wiki/data/wikidata/
 
 6) Copy your textures to /wiki/textures/
 
@@ -121,30 +119,3 @@ INSTALL (generate itemcube images - build from source required)
 5) Copy to /wiki/itemcubes/
 
 
-
------------------
-VERSION HISTORY
------------------
-
-0.0.3 
-
-- more bug fixes and minor tweaks
-- rename image/ to textures/
-- added imagecubes
-- removed huge database
-- included default textures and cubes
-- remove image harvesting in import.php (too slow)
-
------------------
-
-0.0.2
-
- - bug fixes and minor tweaks
-
------------------
-
-0.0.1
-
- - initial release
-
------------------
