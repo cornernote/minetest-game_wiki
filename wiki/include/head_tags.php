@@ -9,6 +9,10 @@
 </style>
 <link href="bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 <style>
+    body {
+        padding-top: 90px;
+    }
+
     h2 {
         border: 1px solid #ddd;
         border-width: 1px 0;

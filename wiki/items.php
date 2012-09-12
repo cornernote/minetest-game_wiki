@@ -29,10 +29,10 @@ require('globals.php');
     }
     if (isset($_GET['group'])) {
         $filters .= '[group:' . $_GET['group'] . ']';
-		foreach(explode(',', $_GET['group']) as $group) {
-			$filter_join .= 'LEFT JOIN group_to_itemname group_' . $group . ' ON "group_' . $group . '"."name"="item"."name"';
-			$filter_sql .= 'AND "group_' . $group . '"."group"="' . SQLite3::escapeString($group) . '" ';
-		}
+        foreach (explode(',', $_GET['group']) as $group) {
+            $filter_join .= 'LEFT JOIN group_to_itemname group_' . $group . ' ON "group_' . $group . '"."name"="item"."name"';
+            $filter_sql .= 'AND "group_' . $group . '"."group"="' . SQLite3::escapeString($group) . '" ';
+        }
     }
     ?>
 
@@ -56,14 +56,14 @@ require('globals.php');
                         <h3><?php echo 'type:' . $type; ?></h3>
                         <?php
                         $sql = '
-							SELECT "item"."id", "item"."name", "item"."image", "item"."description" 
-							FROM "item"
-							' . $filter_join . '
-							WHERE "type"="' . $type . '"
-							AND "mod"="' . $mod . '" 
-							' . $filter_sql . '
-							ORDER BY "item"."name"
-						';
+                            SELECT "item"."id", "item"."name", "item"."image", "item"."description"
+                            FROM "item"
+                            ' . $filter_join . '
+                            WHERE "type"="' . $type . '"
+                            AND "mod"="' . $mod . '"
+                            ' . $filter_sql . '
+                            ORDER BY "item"."name"
+                        ';
                         $q = $db->query($sql);
                         while ($row = $q->fetchArray()) {
                             echo gamewiki::item($row['name'], null, true);
@@ -82,7 +82,6 @@ require('globals.php');
         if ($output_mod) echo $contents;
     }
     ?>
-
 </div>
 <div id="footer"></div>
 </body>
