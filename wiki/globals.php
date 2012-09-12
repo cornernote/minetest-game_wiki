@@ -312,10 +312,12 @@ function menu()
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="./"><?php echo $GLOBALS['name']; ?></a>
+            <a class="brand" href="<?php echo $GLOBALS['brand_url']; ?>"><?php echo $GLOBALS['name']; ?></a>
 
             <div class="nav-collapse">
                 <ul class="nav">
+                    <li <?php echo in_array($page, array('index.php')) ? 'class="active"' : '' ?>>
+                        <a href="./">Home</a></li>
                     <li <?php echo in_array($page, array('items.php', 'item.php')) ? 'class="active"' : '' ?>>
                         <a href="items.php">Items</a></li>
                     <li <?php echo in_array($page, array('crafts.php', 'craft.php')) ? 'class="active"' : '' ?>>
@@ -324,9 +326,6 @@ function menu()
                         <a href="abms.php">ABMs</a></li>
                     <li <?php echo in_array($page, array('aliases.php')) ? 'class="active"' : '' ?>>
                         <a href="aliases.php">Aliases</a></li>
-                    </li>
-                    <li>
-                        <a href="https://sites.google.com/site/cornernote/minetest/game-wiki">Visit GameWiki for Minetest Homepage</a></li>
                     </li>
                 </ul>
             </div>
