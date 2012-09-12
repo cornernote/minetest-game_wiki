@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MTGW</title>
+    <title><title>List Crafts :: <?php echo $GLOBALS['name']; ?></title></title>
     <?php echo head_tags(); ?>
 </head>
 
@@ -31,10 +31,9 @@
     print '<pre>';
     print_r($data);
     print '</pre>';
-
-
     ?>
 
 </div>
+<div id="footer"></div>
 </body>
 </html>

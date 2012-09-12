@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MTGW</title>
+    <title>View ABM :: <?php echo $GLOBALS['name']; ?></title>
     <?php echo head_tags(); ?>
 </head>
 
@@ -69,5 +69,6 @@
     ?>
 
 </div>
+<div id="footer"></div>
 </body>
 </html>

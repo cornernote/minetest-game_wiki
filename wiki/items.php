@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MTGW</title>
+    <title>List Items :: <?php echo $GLOBALS['name']; ?></title>
     <?php echo head_tags(); ?>
 </head>
 
@@ -11,17 +11,18 @@
 <div class="container">
 
     <?php
-    $mods = array();
-    $q = $GLOBALS['db']->query('SELECT mod FROM "item" WHERE mod!="unknown" AND mod!="" GROUP BY mod ORDER BY mod');
-    while ($row = $q->fetchArray()) {
-        $mods[] = $row['mod'];
+    $mods = get_mods();
+    $filters = $filter_sql = $filter_join = '';
+    if (isset($_GET['mod'])) {
+        $filters .= '[mod:' . $_GET['mod'] . ']';
+        $filter_sql .= 'AND "mod"="' . SQLite3::escapeString($_GET['mod']) . '" ';
     }
-    $filters = '';
-    $group_sql = $group_join = '';
     if (isset($_GET['group'])) {
         $filters .= '[group:' . $_GET['group'] . ']';
-        $group_join = 'LEFT JOIN group_to_itemname ON "group_to_itemname"."name"="item"."name"';
-        $group_sql = 'AND "group"="' . SQLite3::escapeString($_GET['group']) . '"';
+		foreach(explode(',', $_GET['group']) as $group) {
+			$filter_join .= 'LEFT JOIN group_to_itemname group_' . $group . ' ON "group_' . $group . '"."name"="item"."name"';
+			$filter_sql .= 'AND "group_' . $group . '"."group"="' . SQLite3::escapeString($group) . '" ';
+		}
     }
     ?>
 
@@ -47,20 +48,18 @@
                         $sql = '
 							SELECT "item"."id", "item"."name", "item"."image", "item"."description" 
 							FROM "item"
-							' . $group_join . '
+							' . $filter_join . '
 							WHERE "type"="' . $type . '"
 							AND "mod"="' . $mod . '" 
-							' . $group_sql . '
+							' . $filter_sql . '
 							ORDER BY "item"."name"
 						';
                         $q = $GLOBALS['db']->query($sql);
-                        echo '<ul>';
                         while ($row = $q->fetchArray()) {
-                            echo '<li>' . item($row['name']) . '</li>';
+                            echo item($row['name'], null, true);
                             $output_mod = true;
                             $output_type = true;
                         }
-                        echo '</ul>';
                         ?>
                     </div>
                     <?php
@@ -75,5 +74,6 @@
     ?>
 
 </div>
+<div id="footer"></div>
 </body>
 </html>

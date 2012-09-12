@@ -36,7 +36,9 @@ function image($image, $options = array())
         return '';
     }
     if (substr($image, 0, 14) == '[inventorycube') {
-        return item_image(array('image' => $image));
+        $output = item_image(array('image' => $image));
+		if ($output)
+			return $output;
     }
     if (strpos($image, '^') !== false) {
         $images = explode('^', $image);
@@ -58,6 +60,9 @@ function image($image, $options = array())
     //        }
     //    }
     //}
+	if ($image == '[inventorycube') {
+        return '';
+	}
     if (!file_exists('textures/' . $image)) {
         debug('cant find: ' . $image);
         return '';
@@ -83,7 +88,25 @@ function item_image($item, $options = array())
         if (substr($item['image'], 0, 14) == '[inventorycube') {
             $file = 'itemcubes/' . $item['image'] . '.png';
             if (!file_exists($file))
-                return '';
+				$file = false;
+        }
+    }
+    if (!$file && !empty($item['image'])) {
+		$file = 'textures/'.$item['image'];
+		if (!file_exists($file))
+			$file = false;
+    }
+    if (!$file && !empty($item['data'])) {
+		$data = json_decode($item['data']);
+		if (!empty($data->options->tiles)) {
+			$file = 'textures/'.$data->options->tiles[0];
+			if (!file_exists($file))
+				$file = false;
+        }
+		if (!empty($data->options->tile_images)) {
+			$file = 'textures/'.$data->options->tile_images[0];
+			if (!file_exists($file))
+				$file = false;
         }
     }
     if ($file) {
@@ -95,13 +118,10 @@ function item_image($item, $options = array())
         $class = !empty($options['class']) ? 'class="' . $options['class'] . ' "' : '';
         return '<img src="' . $file . '" ' . $width . $height . $class . '/>';
     }
-    if (!empty($item['image'])) {
-        return image($item['image']);
-    }
     return false;
 }
 
-function item($name, $quantity = null)
+function item($name, $quantity = null, $small = false)
 {
     $output = '';
     $name = SQLite3::escapeString(item_name($name));
@@ -118,10 +138,16 @@ function item($name, $quantity = null)
     // load the item
     $q = $GLOBALS['db']->query('SELECT id, data, type, name, image, description FROM item WHERE name="' . $name . '"');
     if ($item = $q->fetchArray()) {
-        $output .= '<a class="item" href="item.php?name=' . $item['name'] . '">';
+		$attr = 'class="item"';
+		if ($small) {
+			$attr = 'rel="tooltip" title="' . $item['description'] . ' [' . $item['type'] . '][' . $item['name'] . ']' . ($quantity ? ' x' . $quantity : '') .'"';
+		}
+        $output .= '<a href="item.php?name=' . $item['name'] . '" ' . $attr . '>';
         $output .= '<span class="image">' . item_image($item) . '</span>';
-        $output .= '<span class="description">' . $item['description'] . '&nbsp;</span>';
-        $output .= '<span class="name">[' . $item['type'] . '][' . $item['name'] . ']' . ($quantity ? ' x' . $quantity : '') . '</span>';
+        if (!$small) {
+            $output .= '<span class="description">' . $item['description'] . '&nbsp;</span>';
+            $output .= '<span class="name">[' . $item['type'] . '][' . $item['name'] . ']' . ($quantity ? ' x' . $quantity : '') . '</span>';
+        }
         $output .= '</a>';
     }
 
@@ -242,7 +268,28 @@ function head_tags()
     table.crafting td a.item {
         margin: 0 auto;
     }
+
+    table.crafting-small td {
+        border: 1px solid #ccc;
+        margin: 1px;
+        padding: 1px;
+        width: 32px;
+        height: 32px;
+    }
+	
+	#footer {
+		clear: both;
+		height: 50px;
+	}
+
 </style>
+<script type="text/javascript" src="bootstrap/js/jquery.js"></script>
+<script type="text/javascript" src="bootstrap/js/bootstrap.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $('a[rel=tooltip]').tooltip();
+    });
+</script>
 
 <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
 <!--[if lt IE 9]>
@@ -265,7 +312,7 @@ function menu()
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </a>
-            <a class="brand" href="./">MineTest GameWiki</a>
+            <a class="brand" href="./"><?php echo $GLOBALS['name']; ?></a>
 
             <div class="nav-collapse">
                 <ul class="nav">
@@ -316,78 +363,89 @@ function item_name($name)
     return $name;
 }
 
-function craft_recipe($recipe, $type)
+function craft_recipe($recipe, $type, $small = false)
 {
-    $output = '<table class="crafting">';
+    $class = $small ? 'crafting-small' : 'crafting';
+    $output = '<table class="' . $class . '">';
     if (in_array($type, array('fuel', 'cooking'))) {
         $output .= '<tr>';
-        $output .= '<td>' . ($type == 'cooking' ? item($recipe) : '') . '</td>';
+        $output .= '<td>' . ($type == 'cooking' ? item($recipe, null, $small) : '') . '</td>';
         $output .= '</tr>';
         $output .= '<tr>';
-        $output .= '<td>' . ($type == 'fuel' ? item('default:furnace') : item('default:furnace_active')) . '</td>';
+        $output .= '<td>' . ($type == 'fuel' ? item('default:furnace', null, $small) : item('default:furnace_active', null, $small)) . '</td>';
         $output .= '</tr>';
         $output .= '<tr>';
-        $output .= '<td>' . ($type == 'fuel' ? item($recipe) : '') . '</td>';
+        $output .= '<td>' . ($type == 'fuel' ? item($recipe, null, $small) : '') . '</td>';
         $output .= '</tr>';
     }
     else {
         if (is_array($recipe)) {
             if (is_array($recipe[0])) {
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[0][0]) ? item($recipe[0][0]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[0][1]) ? item($recipe[0][1]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[0][2]) ? item($recipe[0][2]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[0][0]) ? item($recipe[0][0], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[0][1]) ? item($recipe[0][1], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[0][2]) ? item($recipe[0][2], null, $small) : '') . '</td>';
                 $output .= '</tr>';
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[1][0]) ? item($recipe[1][0]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[1][1]) ? item($recipe[1][1]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[1][2]) ? item($recipe[1][2]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[1][0]) ? item($recipe[1][0], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[1][1]) ? item($recipe[1][1], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[1][2]) ? item($recipe[1][2], null, $small) : '') . '</td>';
                 $output .= '</tr>';
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[2][0]) ? item($recipe[2][0]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[2][1]) ? item($recipe[2][1]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[2][2]) ? item($recipe[2][2]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[2][0]) ? item($recipe[2][0], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[2][1]) ? item($recipe[2][1], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[2][2]) ? item($recipe[2][2], null, $small) : '') . '</td>';
                 $output .= '</tr>';
             }
             else {
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[0]) ? item($recipe[0]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[1]) ? item($recipe[1]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[2]) ? item($recipe[2]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[0]) ? item($recipe[0], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[1]) ? item($recipe[1], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[2]) ? item($recipe[2], null, $small) : '') . '</td>';
                 $output .= '</tr>';
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[3]) ? item($recipe[3]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[4]) ? item($recipe[4]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[5]) ? item($recipe[5]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[3]) ? item($recipe[3], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[4]) ? item($recipe[4], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[5]) ? item($recipe[5], null, $small) : '') . '</td>';
                 $output .= '</tr>';
                 $output .= '<tr>';
-                $output .= '<td>' . (isset($recipe[6]) ? item($recipe[6]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[7]) ? item($recipe[7]) : '') . '</td>';
-                $output .= '<td>' . (isset($recipe[8]) ? item($recipe[8]) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[6]) ? item($recipe[6], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[7]) ? item($recipe[7], null, $small) : '') . '</td>';
+                $output .= '<td>' . (isset($recipe[8]) ? item($recipe[8], null, $small) : '') . '</td>';
                 $output .= '</tr>';
             }
         }
         else {
             $recipe = explode(' ', $recipe);
             $output .= '<tr>';
-            $output .= '<td>' . (isset($recipe[0]) ? item($recipe[0]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[1]) ? item($recipe[1]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[2]) ? item($recipe[2]) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[0]) ? item($recipe[0], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[1]) ? item($recipe[1], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[2]) ? item($recipe[2], null, $small) : '') . '</td>';
             $output .= '</tr>';
             $output .= '<tr>';
-            $output .= '<td>' . (isset($recipe[3]) ? item($recipe[3]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[4]) ? item($recipe[4]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[5]) ? item($recipe[5]) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[3]) ? item($recipe[3], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[4]) ? item($recipe[4], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[5]) ? item($recipe[5], null, $small) : '') . '</td>';
             $output .= '</tr>';
             $output .= '<tr>';
-            $output .= '<td>' . (isset($recipe[6]) ? item($recipe[6]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[7]) ? item($recipe[7]) : '') . '</td>';
-            $output .= '<td>' . (isset($recipe[8]) ? item($recipe[8]) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[6]) ? item($recipe[6], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[7]) ? item($recipe[7], null, $small) : '') . '</td>';
+            $output .= '<td>' . (isset($recipe[8]) ? item($recipe[8], null, $small) : '') . '</td>';
             $output .= '</tr>';
         }
     }
     $output .= '</table>';
     return $output;
+}
+
+function get_mods() 
+{
+	$mods = array();
+	$q = $GLOBALS['db']->query('SELECT mod FROM "item" WHERE mod!="unknown" AND mod!="__builtin" AND mod!="" GROUP BY mod ORDER BY mod');
+	while ($row = $q->fetchArray()) {
+		$mods[] = $row['mod'];
+	}
+	return $mods;
 }
 
 ?>

@@ -2,72 +2,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MTGW</title>
+    <title>List ABMs :: <?php echo $GLOBALS['name']; ?></title>
     <?php echo head_tags(); ?>
 </head>
 
 <body>
 <?php echo menu(); ?>
 <div class="container">
-    <h1>ABMs</h1>
 
     <?php
-    $q = $GLOBALS['db']->query('SELECT id, mod, data FROM "abm" ORDER BY mod');
-    echo '<table class="table">';
-    echo '<tr>';
-    echo '<th width="100">Mod</th>';
-    echo '<th width="30%">Node Names</th>';
-    echo '<th width="30%">Neighbors</th>';
-    echo '<th width="100">C / I</th>';
-    echo '<th width="100">&nbsp;</th>';
-    echo '<td>';
-    while ($row = $q->fetchArray()) {
-        $data = json_decode($row['data']);
-        echo '<tr>';
-        echo '<td>' . $row['mod'] . '</td>';
-        echo '<td>';
-        echo '<div class="itemgroup"><ul>';
-        if (isset($data->options)) {
-            if (!empty($data->options->nodenames)) {
-                if (is_array($data->options->nodenames)) foreach ($data->options->nodenames as $nodename) {
-                    echo '<li>';
-                    echo item($nodename);
-                    echo '</li>';
-                }
-                elseif (isset($data->nodenames)) {
-                    echo '<li>';
-                    echo item($data->nodenames);
-                    echo '</li>';
-                }
-            }
-        }
-        echo '</div></ul>';
-        echo '</td>';
-        echo '<td>';
-        echo '<div class="itemgroup"><ul>';
-        if (isset($data->options)) {
-            if (!empty($data->options->neighbors)) {
-                if (is_array($data->options->neighbors)) foreach ($data->options->neighbors as $neighbor) {
-                    echo '<li>';
-                    echo item($neighbor);
-                    echo '</li>';
-                }
-                else {
-                    echo '<li>';
-                    echo item($data->neighbors);
-                    echo '</li>';
-                }
-            }
-        }
-        echo '</div></ul>';
-        echo '</td>';
-        echo '<td>' . (isset($data->options->chance) ? $data->options->chance : '?') . ' / ' . (isset($data->options->interval) ? $data->options->interval : '?') . '</td>';
-        echo '<td><a href="abm.php?id=' . $row['id'] . '" class="btn">view abm</a></td>';
-        echo '</tr>';
+    $mods = get_mods();
+    $filters = $filter_sql = $filter_join = '';
+    if (isset($_GET['mod'])) {
+        $filters .= '[mod:' . $_GET['mod'] . ']';
+        $filter_sql .= 'AND mod="' . SQLite3::escapeString($_GET['mod']) . '" ';
     }
-    echo '</table>';
+	?>
+
+    <h1>ABMs
+		<small><?php echo $filters; ?></small>
+	</h1>
+
+    <?php
+    $mods = get_mods();
+    foreach ($mods as $mod) {
+        $output_mod = false;
+        ob_start();
+        echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
+		$q = $GLOBALS['db']->query('SELECT id, mod, data FROM "abm" ' . $filter_join . ' WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
+		echo '<table class="table">';
+		echo '<tr>';
+		echo '<th width="100">Mod</th>';
+		echo '<th width="30%">Node Names</th>';
+		echo '<th width="30%">Neighbors</th>';
+		echo '<th width="100">C / I</th>';
+		echo '<th width="100">&nbsp;</th>';
+		echo '<td>';
+		while ($row = $q->fetchArray()) {
+			$output_mod = true;
+			$data = json_decode($row['data']);
+			echo '<tr>';
+			echo '<td>' . $row['mod'] . '</td>';
+			echo '<td>';
+			echo '<div class="itemgroup">';
+			if (isset($data->options)) {
+				if (!empty($data->options->nodenames)) {
+					if (is_array($data->options->nodenames)) foreach ($data->options->nodenames as $nodename) {
+						echo item($nodename, null, true);
+					}
+					elseif (isset($data->nodenames)) {
+						echo item($data->nodenames, null, true);
+					}
+				}
+			}
+			echo '</div>';
+			echo '</td>';
+			echo '<td>';
+			echo '<div class="itemgroup">';
+			if (isset($data->options)) {
+				if (!empty($data->options->neighbors)) {
+					if (is_array($data->options->neighbors)) foreach ($data->options->neighbors as $neighbor) {
+						echo item($neighbor, null, true);
+					}
+					else {
+						echo item($data->neighbors, null, true);
+					}
+				}
+			}
+			echo '</div>';
+			echo '</td>';
+			echo '<td>' . (isset($data->options->chance) ? $data->options->chance : '?') . ' / ' . (isset($data->options->interval) ? $data->options->interval : '?') . '</td>';
+			echo '<td><a href="abm.php?id=' . $row['id'] . '" class="btn">view abm</a></td>';
+			echo '</tr>';
+		}
+		echo '</table>';
+        $contents = ob_get_clean();
+        if ($output_mod) echo $contents;
+	}
     ?>
 
 </div>
+<div id="footer"></div>
 </body>
 </html>

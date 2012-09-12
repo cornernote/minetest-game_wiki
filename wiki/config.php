@@ -1,4 +1,7 @@
 <?php
+// this is the title of your GameWiki
+$GLOBALS['name'] = 'Minetest GameWiki';
+
 // this is your path to minetest:
 $GLOBALS['path'] = 'C:/minetest';
 

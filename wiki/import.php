@@ -19,7 +19,7 @@ require('globals.php');
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>MTGW</title>
+    <title>Data Import :: <?php echo $GLOBALS['name']; ?></title>
     <?php echo head_tags(); ?>
 </head>
 
@@ -189,5 +189,6 @@ require('globals.php');
 
 
 </div>
+<div id="footer"></div>
 </body>
 </html>
