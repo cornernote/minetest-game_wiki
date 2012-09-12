@@ -112,10 +112,10 @@ require('globals.php');
             $json = json_decode($contents);
             $data = SQLite3::escapeString($contents);
             $type = isset($json->options->type) ? $json->options->type : 'crafting';
-            $_output = isset($json->options->output) ? item_name($json->options->output) : '';
+            $_output = isset($json->options->output) ? trim($json->options->output) : '';
             $_output = explode(' ', $_output);
-            $output = SQLite3::escapeString($_output[0]);
-            $quantity = SQLite3::escapeString(isset($_output[1]) ? $_output[1] : 1);
+            $output = SQLite3::escapeString(item_name($_output[0]));
+            $quantity = isset($_output[1]) ? (int)$_output[1] : 1;
             if ($GLOBALS['db']->query("INSERT INTO craft (id, mod, data, type, output, quantity) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $output . "','" . $quantity . "')")) {
                 $craft_id = $GLOBALS['db']->lastInsertRowID();
                 if (isset($json->options) && isset($json->options->recipe)) foreach (item_names($json->options->recipe) as $name)

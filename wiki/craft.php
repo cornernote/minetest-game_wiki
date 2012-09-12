@@ -15,7 +15,6 @@
     $q = $GLOBALS['db']->query('SELECT id, output, mod, quantity, type, data FROM "craft" WHERE id = "' . $id . '"');
     $row = $q->fetchArray();
     $data = json_decode($row['data']);
-
     echo '<h1>Craft <small>' . ($row['type'] ? $row['type'] : 'unknown') . '</small></h1>';
 
     echo '<h2>Output</h2>';
