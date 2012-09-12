@@ -49,7 +49,7 @@ require('globals.php');
         }
         ob_start();
         echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
-        echo '<a href="javascript:$(\'#pasteable_' . $mod . '\').toggle();$(\'#table_' . $mod . '\').toggle();">toggle pasteable</a>';
+        echo '<a href="javascript:return false;" onclick="$(\'#pasteable_' . $mod . '\').toggle();$(\'#table_' . $mod . '\').toggle();">toggle pasteable</a>';
         echo '<pre id="pasteable_' . $mod . '" style="display:none;">' . implode("\n\n", $pasteable) . '</pre>';
         echo '<table class="table" id="table_' . $mod . '">';
         echo '<tr>';
