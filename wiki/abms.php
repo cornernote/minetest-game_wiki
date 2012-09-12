@@ -1,17 +1,27 @@
-<?php require('globals.php'); ?>
+<?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+require('globals.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>List ABMs :: <?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container">
 
     <?php
-    $mods = get_mods();
+    $mods = gamewiki::get_mods();
     $filters = $filter_sql = $filter_join = '';
     if (isset($_GET['mod'])) {
         $filters .= '[mod:' . $_GET['mod'] . ']';
@@ -24,12 +34,12 @@
 	</h1>
 
     <?php
-    $mods = get_mods();
+    $mods = gamewiki::get_mods();
     foreach ($mods as $mod) {
         $output_mod = false;
         ob_start();
         echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
-		$q = $GLOBALS['db']->query('SELECT id, mod, data FROM "abm" ' . $filter_join . ' WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
+		$q = $db->query('SELECT id, mod, data FROM "abm" ' . $filter_join . ' WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
 		echo '<table class="table">';
 		echo '<tr>';
 		echo '<th width="100">Mod</th>';

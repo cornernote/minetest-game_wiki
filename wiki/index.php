@@ -1,13 +1,23 @@
-<?php require('globals.php'); ?>
+<?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+require('globals.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title><?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container home">
 
     <div class="hero-unit">
@@ -46,7 +56,7 @@
 			<h2>Mods</h2>
 			<table class="table">
 			<?php
-			foreach(get_mods() as $mod) {
+			foreach(gamewiki::get_mods() as $mod) {
 				?>
 				<tr>
 					<th><?php echo $mod; ?></th>

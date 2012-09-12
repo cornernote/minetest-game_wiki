@@ -1,18 +1,28 @@
-<?php require('globals.php'); ?>
+<?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+require('globals.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>View ABM :: <?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container">
 
     <?php
     $id = SQLite3::escapeString($_GET['id']);
-    $q = $GLOBALS['db']->query('SELECT id, mod, data FROM "abm" WHERE id = "' . $id . '"');
+    $q = $db->query('SELECT id, mod, data FROM "abm" WHERE id = "' . $id . '"');
     $row = $q->fetchArray();
     $data = json_decode($row['data']);
     echo '<h1>ABM</h1>';
@@ -24,14 +34,14 @@
             if (is_array($data->options->nodenames)) foreach ($data->options->nodenames as $nodename) {
                 echo '<tr>';
                 echo '<td>';
-                echo item($nodename);
+                echo gamewiki::item($nodename);
                 echo '</td>';
                 echo '</tr>';
             }
             else {
                 echo '<tr>';
                 echo '<td>';
-                echo item($data->nodenames);
+                echo gamewiki::item($data->nodenames);
                 echo '</td>';
                 echo '</tr>';
             }
@@ -46,14 +56,14 @@
             if (is_array($data->options->neighbors)) foreach ($data->options->neighbors as $neighbor) {
                 echo '<tr>';
                 echo '<td>';
-                echo item($neighbor);
+                echo gamewiki::item($neighbor);
                 echo '</td>';
                 echo '</tr>';
             }
             else {
                 echo '<tr>';
                 echo '<td>';
-                echo item($data->neighbors);
+                echo gamewiki::item($data->neighbors);
                 echo '</td>';
                 echo '</tr>';
             }

@@ -1,4 +1,13 @@
 <?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+
 $resume = empty($_GET['resume']) ? false : true;
 if(!count(glob('data/wikidata/*.json'))) $resume = true;
 
@@ -20,11 +29,11 @@ require('globals.php');
 <html lang="en">
 <head>
     <title>Data Import :: <?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container">
     <h1>Import JSON Data</h1>
 
@@ -35,35 +44,35 @@ require('globals.php');
         // create database
         if (!$resume) {
 
-            $GLOBALS['db']->query('CREATE TABLE "abm" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."abm.mod" ON "abm" ("mod")');
+            $db->query('CREATE TABLE "abm" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT)');
+            $db->query('CREATE INDEX "main"."abm.mod" ON "abm" ("mod")');
 
-            $GLOBALS['db']->query('CREATE TABLE "abm_to_itemname" ("abm_id" INTEGER, "name" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."abm_to_itemname.name" ON "abm_to_itemname" ("name")');
+            $db->query('CREATE TABLE "abm_to_itemname" ("abm_id" INTEGER, "name" TEXT)');
+            $db->query('CREATE INDEX "main"."abm_to_itemname.name" ON "abm_to_itemname" ("name")');
 
-            $GLOBALS['db']->query('CREATE TABLE "alias" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "name" TEXT, "itemname" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."alias.mod" ON "alias" ("mod")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."alias.name" ON "alias" ("name")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."alias.itemname" ON "alias" ("itemname")');
+            $db->query('CREATE TABLE "alias" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "name" TEXT, "itemname" TEXT)');
+            $db->query('CREATE INDEX "main"."alias.mod" ON "alias" ("mod")');
+            $db->query('CREATE INDEX "main"."alias.name" ON "alias" ("name")');
+            $db->query('CREATE INDEX "main"."alias.itemname" ON "alias" ("itemname")');
 
-            $GLOBALS['db']->query('CREATE TABLE "craft" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "type" TEXT, "output" TEXT, "quantity" INTEGER)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."craft.mod" ON "craft" ("mod")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."craft.type" ON "craft" ("type")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."craft.output" ON "craft" ("output")');
+            $db->query('CREATE TABLE "craft" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "type" TEXT, "output" TEXT, "quantity" INTEGER)');
+            $db->query('CREATE INDEX "main"."craft.mod" ON "craft" ("mod")');
+            $db->query('CREATE INDEX "main"."craft.type" ON "craft" ("type")');
+            $db->query('CREATE INDEX "main"."craft.output" ON "craft" ("output")');
 
-            $GLOBALS['db']->query('CREATE TABLE "craft_to_itemname" ("craft_id" INTEGER, "name" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."craft_to_itemname.name" ON "craft_to_itemname" ("name")');
+            $db->query('CREATE TABLE "craft_to_itemname" ("craft_id" INTEGER, "name" TEXT)');
+            $db->query('CREATE INDEX "main"."craft_to_itemname.name" ON "craft_to_itemname" ("name")');
 
-            $GLOBALS['db']->query('CREATE TABLE "entity" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."entity.mod" ON "entity" ("mod")');
+            $db->query('CREATE TABLE "entity" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT)');
+            $db->query('CREATE INDEX "main"."entity.mod" ON "entity" ("mod")');
 
-            $GLOBALS['db']->query('CREATE TABLE "item" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "type" TEXT, "name" TEXT, "description" TEXT, "image" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."item.mod" ON "item" ("mod")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."item.type" ON "item" ("type")');
-            $GLOBALS['db']->query('CREATE INDEX "main"."item.name" ON "item" ("name")');
+            $db->query('CREATE TABLE "item" ("id" INTEGER PRIMARY KEY, "mod" TEXT, "data" TEXT, "type" TEXT, "name" TEXT, "description" TEXT, "image" TEXT)');
+            $db->query('CREATE INDEX "main"."item.mod" ON "item" ("mod")');
+            $db->query('CREATE INDEX "main"."item.type" ON "item" ("type")');
+            $db->query('CREATE INDEX "main"."item.name" ON "item" ("name")');
 
-            $GLOBALS['db']->query('CREATE TABLE "group_to_itemname" ("group" TEXT, "value" TEXT, "name" TEXT)');
-            $GLOBALS['db']->query('CREATE INDEX "main"."group_to_itemname.name" ON "group_to_itemname" ("name")');
+            $db->query('CREATE TABLE "group_to_itemname" ("group" TEXT, "value" TEXT, "name" TEXT)');
+            $db->query('CREATE INDEX "main"."group_to_itemname.name" ON "group_to_itemname" ("name")');
 
         }
 
@@ -76,12 +85,12 @@ require('globals.php');
             $contents = file_get_contents($filename);
             $json = json_decode($contents);
             $data = SQLite3::escapeString($contents);
-            if ($GLOBALS['db']->query("INSERT INTO abm (id, mod, data) VALUES ('" . $id . "','" . $mod . "','" . $data . "')")) {
-                $abm_id = $GLOBALS['db']->lastInsertRowID();
-                if (isset($json->options->nodenames)) foreach (item_names($json->options->nodenames) as $name)
-                    $GLOBALS['db']->query("INSERT INTO abm_to_itemname (abm_id, name) VALUES ('" . $abm_id . "','" . $name . "')");
-                if (isset($json->options->neighbors)) foreach (item_names($json->options->neighbors) as $name)
-                    $GLOBALS['db']->query("INSERT INTO abm_to_itemname (abm_id, name) VALUES ('" . $abm_id . "','" . $name . "')");
+            if ($db->query("INSERT INTO abm (id, mod, data) VALUES ('" . $id . "','" . $mod . "','" . $data . "')")) {
+                $abm_id = $db->lastInsertRowID();
+                if (isset($json->options->nodenames)) foreach (gamewiki::item_names($json->options->nodenames) as $name)
+                    $db->query("INSERT INTO abm_to_itemname (abm_id, name) VALUES ('" . $abm_id . "','" . $name . "')");
+                if (isset($json->options->neighbors)) foreach (gamewiki::item_names($json->options->neighbors) as $name)
+                    $db->query("INSERT INTO abm_to_itemname (abm_id, name) VALUES ('" . $abm_id . "','" . $name . "')");
                 unlink($filename);
             }
         }
@@ -97,7 +106,7 @@ require('globals.php');
             $data = SQLite3::escapeString($contents);
             $name = SQLite3::escapeString($json->name);
             $itemname = SQLite3::escapeString($json->options);
-            if ($GLOBALS['db']->query("INSERT INTO alias (id, mod, data, name, itemname) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $name . "','" . $itemname . "')")) {
+            if ($db->query("INSERT INTO alias (id, mod, data, name, itemname) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $name . "','" . $itemname . "')")) {
                 unlink($filename);
             }
         }
@@ -114,12 +123,12 @@ require('globals.php');
             $type = isset($json->options->type) ? $json->options->type : 'crafting';
             $_output = isset($json->options->output) ? trim($json->options->output) : '';
             $_output = explode(' ', $_output);
-            $output = SQLite3::escapeString(item_name($_output[0]));
+            $output = SQLite3::escapeString(gamewiki::item_name($_output[0]));
             $quantity = isset($_output[1]) ? (int)$_output[1] : 1;
-            if ($GLOBALS['db']->query("INSERT INTO craft (id, mod, data, type, output, quantity) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $output . "','" . $quantity . "')")) {
-                $craft_id = $GLOBALS['db']->lastInsertRowID();
-                if (isset($json->options) && isset($json->options->recipe)) foreach (item_names($json->options->recipe) as $name)
-                    $GLOBALS['db']->query("INSERT INTO craft_to_itemname (craft_id, name) VALUES ('" . $craft_id . "','" . $name . "')");
+            if ($db->query("INSERT INTO craft (id, mod, data, type, output, quantity) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $output . "','" . $quantity . "')")) {
+                $craft_id = $db->lastInsertRowID();
+                if (isset($json->options) && isset($json->options->recipe)) foreach (gamewiki::item_names($json->options->recipe) as $name)
+                    $db->query("INSERT INTO craft_to_itemname (craft_id, name) VALUES ('" . $craft_id . "','" . $name . "')");
                 unlink($filename);
             }
         }
@@ -131,7 +140,7 @@ require('globals.php');
             $pathinfo = pathinfo($filename);
             list($table, $mod, $id) = explode('.', $pathinfo['filename']);
             $data = SQLite3::escapeString(file_get_contents($filename));
-            if ($GLOBALS['db']->query("INSERT INTO entity (id, mod, data) VALUES ('" . $id . "','" . $mod . "','" . $data . "')")) {
+            if ($db->query("INSERT INTO entity (id, mod, data) VALUES ('" . $id . "','" . $mod . "','" . $data . "')")) {
                 unlink($filename);
             }
         }
@@ -146,7 +155,7 @@ require('globals.php');
             $data = SQLite3::escapeString($contents);
             $json = json_decode($contents);
             $type = SQLite3::escapeString(isset($json->options) && !empty($json->options->type) ? $json->options->type : 'unknown');
-            $name = SQLite3::escapeString(item_name($json->name));
+            $name = SQLite3::escapeString(gamewiki::item_name($json->name));
             $name = explode(' ', $name);
             $name = isset($name[1]) ? $name[1] : $name[0];
             $description = SQLite3::escapeString((isset($json->options->description) ? $json->options->description : ''));
@@ -174,9 +183,9 @@ require('globals.php');
                     $image = SQLite3::escapeString(isset($images[0]) ? $images[0] : '');
                 }
             }
-            if ($GLOBALS['db']->query("INSERT INTO item (id, mod, data, type, name, description, image) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $name . "','" . $description . "','" . $image . "')")) {
+            if ($db->query("INSERT INTO item (id, mod, data, type, name, description, image) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $name . "','" . $description . "','" . $image . "')")) {
                 if (isset($json->options) && isset($json->options->groups)) foreach ($json->options->groups as $group => $value)
-                    $GLOBALS['db']->query("INSERT INTO group_to_itemname ('group', value, name) VALUES ('" . $group . "','" . $value . "','" . $name . "')");
+                    $db->query("INSERT INTO group_to_itemname ('group', value, name) VALUES ('" . $group . "','" . $value . "','" . $name . "')");
                 //echo 'fetching images: <b>' . print_r($images, true) . '</b><br/>';
                 //images(array_merge(array($image), $images), array('download' => true));
                 unlink($filename);

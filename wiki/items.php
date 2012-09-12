@@ -1,17 +1,27 @@
-<?php require('globals.php'); ?>
+<?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+require('globals.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>List Items :: <?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container">
 
     <?php
-    $mods = get_mods();
+    $mods = gamewiki::get_mods();
     $filters = $filter_sql = $filter_join = '';
     if (isset($_GET['mod'])) {
         $filters .= '[mod:' . $_GET['mod'] . ']';
@@ -54,9 +64,9 @@
 							' . $filter_sql . '
 							ORDER BY "item"."name"
 						';
-                        $q = $GLOBALS['db']->query($sql);
+                        $q = $db->query($sql);
                         while ($row = $q->fetchArray()) {
-                            echo item($row['name'], null, true);
+                            echo gamewiki::item($row['name'], null, true);
                             $output_mod = true;
                             $output_type = true;
                         }

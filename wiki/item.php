@@ -1,18 +1,28 @@
-<?php require('globals.php'); ?>
+<?php
+/**
+ * GameWiki for Minetest
+ *
+ * Copyright (c) 2012 cornernote, Brett O'Donnell <cornernote@gmail.com>
+ *
+ * Source Code: https://github.com/cornernote/minetest-gamewiki
+ * License: GPLv3
+ */
+require('globals.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>View Items :: <?php echo $GLOBALS['name']; ?></title>
-    <?php echo head_tags(); ?>
+    <title>View Item :: <?php echo $GLOBALS['name']; ?></title>
+    <?php include('include/head_tags.php'); ?>
 </head>
 
 <body>
-<?php echo menu(); ?>
+<?php include('include/menu.php'); ?>
 <div class="container">
 
     <?php
     $name = SQLite3::escapeString($_GET['name']);
-    $q = $GLOBALS['db']->query('SELECT id, mod, type, name, description, data FROM "item" WHERE name = "' . $name . '"');
+    $q = $db->query('SELECT id, mod, type, name, description, data FROM "item" WHERE name = "' . $name . '"');
     $row = $q->fetchArray();
     $data = json_decode($row['data']);
     ?>
@@ -22,7 +32,7 @@
     <?php
 
     // item
-    echo item($row['name']);
+    echo gamewiki::item($row['name']);
 
     // images
     $images = array_merge(
@@ -32,15 +42,15 @@
     );
     if (!empty($images)) {
         echo '<h2>Images</h2>';
-        echo images($images, array('fullsize' => true, 'class' => 'image'));
+        echo gamewiki::images($images, array('fullsize' => true, 'class' => 'image'));
     }
 
     // created by crafts
-    $q = $GLOBALS['db']->query('SELECT id, type, data FROM "craft" WHERE output = "' . $name . '"');
+    $q = $db->query('SELECT id, type, data FROM "craft" WHERE output = "' . $name . '"');
     $rows = array();
     while ($row_c = $q->fetchArray()) {
         $data_c = json_decode($row_c['data']);
-        $rows[] = '<a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a><br/><br/>' . craft_recipe($data_c->options->recipe, $row_c['type']);
+        $rows[] = '<a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a><br/><br/>' . gamewiki::craft_recipe($data_c->options->recipe, $row_c['type']);
     }
     if ($rows) {
         echo '<h2>Created By Crafts</h2>';
@@ -51,19 +61,19 @@
     $output = false;
     ob_start();
     echo '<h2>Used For Crafts</h2>';
-    $q = $GLOBALS['db']->query('SELECT id, mod, type, output, quantity FROM "craft_to_itemname" LEFT JOIN "craft" ON "craft"."id"="craft_to_itemname"."craft_id" WHERE name = "' . $name . '" ORDER BY output');
+    $q = $db->query('SELECT id, mod, type, output, quantity FROM "craft_to_itemname" LEFT JOIN "craft" ON "craft"."id"="craft_to_itemname"."craft_id" WHERE name = "' . $name . '" ORDER BY output');
     echo '<table class="table">';
     echo '<tr>';
-    echo '<th width="100">Mod</th>';
-    echo '<th width="100">Type</th>';
+    echo '<th style="width:100px">Mod</th>';
+    echo '<th style="width:100px">Type</th>';
     echo '<th>Output</th>';
-    echo '<th width="100">&nbsp;</th>';
+    echo '<th style="width:100px">&nbsp;</th>';
     echo '</tr>';
     while ($row_c = $q->fetchArray()) {
         echo '<tr>';
         echo '<td>' . $row_c['mod'] . '</td>';
         echo '<td>' . $row_c['type'] . '</td>';
-        echo '<td>' . ($row_c['output'] ? item($row_c['output'], $row_c['quantity']) : 'no output') . '</td>';
+        echo '<td>' . ($row_c['output'] ? gamewiki::item($row_c['output'], $row_c['quantity']) : 'no output') . '</td>';
         echo '<td><a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a></td>';
         echo '</tr>';
         $output = true;
@@ -74,7 +84,7 @@
 
     // used by abms
     $rows = array();
-    $q = $GLOBALS['db']->query('SELECT id FROM "abm_to_itemname" LEFT JOIN "abm" ON "abm"."id"="abm_to_itemname"."abm_id" WHERE name = "' . $name . '"');
+    $q = $db->query('SELECT id FROM "abm_to_itemname" LEFT JOIN "abm" ON "abm"."id"="abm_to_itemname"."abm_id" WHERE name = "' . $name . '"');
     while ($row_a = $q->fetchArray()) {
         $rows[] = '<a href="abm.php?id=' . $row_a['id'] . '" class="btn">view abm</a>';
     }
