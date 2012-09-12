@@ -325,6 +325,9 @@ function menu()
                     <li <?php echo in_array($page, array('aliases.php')) ? 'class="active"' : '' ?>>
                         <a href="aliases.php">Aliases</a></li>
                     </li>
+                    <li>
+                        <a href="https://sites.google.com/site/cornernote/minetest/game-wiki">Visit GameWiki for Minetest Homepage</a></li>
+                    </li>
                 </ul>
             </div>
             <!--/.nav-collapse -->
