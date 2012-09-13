@@ -70,7 +70,7 @@ require('globals.php');
                     }
                     ?>
                     <div class="span4">
-                        <h3><?php echo 'types:' . implode(', ', $type); ?></h3>
+                        <h3><?php echo 'types:' . implode(',', $type); ?></h3>
                         <?php
                         echo '<p style="text-align:right;"><a href="javascript:return false;" onclick="$(\'#pasteable_' . $type . '_' . $mod . '\').toggle();$(\'#table_' . $type . '_' . $mod . '\').toggle();">toggle pasteable</a></p>';
                         echo '<pre id="pasteable_' . $type . '_' . $mod . '" style="display:none;">' . implode("\n\n", $pasteable) . '</pre>';
