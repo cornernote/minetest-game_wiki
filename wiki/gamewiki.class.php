@@ -394,7 +394,7 @@ class gamewiki
                 if (!isset($return[$k + 1])) {
                     $return[$k] = '   ';
                 }
-                $return[$k] .= '     ' . $k . ' = ' . $paste_item;
+                $return[$k] .= '   ' . $k . ' = ' . $paste_item;
             }
             $return = implode("\n", $return);
         }

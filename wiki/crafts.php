@@ -44,12 +44,18 @@ require('globals.php');
 
             <div class="row">
                 <?php
-                foreach (array('crafting', 'cooking', 'fuel') as $type) {
+                foreach (array(array('crafting', 'shapeless'), array('cooking'), array('fuel')) as $type) {
                     $pasteable = array();
+
+                    // format the sql as "crafting" instead of crafting
+                    $_type = array();
+                    foreach ($type as $_types) {
+                        $_type[] = '"' . $_types . '"';
+                    }
                     $sql = '
                         SELECT id, mod, type, data, output, quantity
                         FROM "craft" ' . $filter_join . '
-                        WHERE "type"="' . $type . '" AND mod="' . $mod . '" ' . $filter_sql . '
+                        WHERE "type" IN (' . implode(', ', $_type) . ') AND mod="' . $mod . '" ' . $filter_sql . '
                         ORDER BY output
                     ';
                     $q = $db->query($sql);
@@ -64,7 +70,7 @@ require('globals.php');
                     }
                     ?>
                     <div class="span4">
-                        <h3><?php echo 'type:' . $type; ?></h3>
+                        <h3><?php echo 'types:' . implode(', ', $type); ?></h3>
                         <?php
                         echo '<p style="text-align:right;"><a href="javascript:return false;" onclick="$(\'#pasteable_' . $type . '_' . $mod . '\').toggle();$(\'#table_' . $type . '_' . $mod . '\').toggle();">toggle pasteable</a></p>';
                         echo '<pre id="pasteable_' . $type . '_' . $mod . '" style="display:none;">' . implode("\n\n", $pasteable) . '</pre>';
@@ -99,8 +105,8 @@ require('globals.php');
 
         <?php
         $contents = ob_get_clean();
-        if ($output_mod)
-            echo $contents;
+        //if ($output_mod)
+        echo $contents;
     }
     ?>
 
