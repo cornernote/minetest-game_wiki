@@ -342,6 +342,10 @@ class gamewiki
      */
     static function craft_recipe_paste($output, $recipe, $type)
     {
+        $output = explode(' ', $output);
+        $quantity = isset($output[1]) ? $output[1] : '1';
+        $quantity = ($quantity <= 1) ? '' : ' x' . $quantity;
+        $output = $output[0] . $quantity;
         $return = '';
         self::$paste_items = array('empty');
         if (in_array($type, array('fuel', 'cooking'))) {
