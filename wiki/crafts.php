@@ -81,7 +81,6 @@ require('globals.php');
                         echo '<th style="width:100px;">&nbsp;</th>';
                         echo '</tr>';
                         foreach ($rows as $row) {
-                            $output_mod = true;
                             $data = json_decode($row['data']);
                             echo '<tr>';
                             echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row['type'], true) : $row['type']) . '</td>';
@@ -105,8 +104,8 @@ require('globals.php');
 
         <?php
         $contents = ob_get_clean();
-        //if ($output_mod)
-        echo $contents;
+        if ($output_mod)
+            echo $contents;
     }
     ?>
 
