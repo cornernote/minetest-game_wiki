@@ -37,40 +37,67 @@ require('globals.php');
     $mods = gamewiki::get_mods();
     foreach ($mods as $mod) {
         $output_mod = false;
-        $pasteable = array();
-        $q = $db->query('SELECT id, mod, type, data, output, quantity FROM "craft" ' . $filter_join . ' WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY output');
-        $rows = array();
-        while ($row = $q->fetchArray()) {
-            $data = json_decode($row['data']);
-            $rows[] = $row;
-            if (isset($data->options->recipe)) {
-                $pasteable[] = gamewiki::craft_recipe_paste($row['output'] . ' ' . $row['quantity'], $data->options->recipe, $row['type']);
-            }
-        }
         ob_start();
-        echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
-        echo '<a href="javascript:return false;" onclick="$(\'#pasteable_' . $mod . '\').toggle();$(\'#table_' . $mod . '\').toggle();">toggle pasteable</a>';
-        echo '<pre id="pasteable_' . $mod . '" style="display:none;">' . implode("\n\n", $pasteable) . '</pre>';
-        echo '<table class="table" id="table_' . $mod . '">';
-        echo '<tr>';
-        echo '<th width="100">Type</th>';
-        echo '<th width="100">Mod</th>';
-        echo '<th>Recipe</th>';
-        echo '<th>Output</th>';
-        echo '<th width="100">&nbsp;</th>';
-        echo '</tr>';
-        foreach ($rows as $row) {
-            $output_mod = true;
-            $data = json_decode($row['data']);
-            echo '<tr>';
-            echo '<td>' . $row['type'] . '</td>';
-            echo '<td>' . $row['mod'] . '</td>';
-            echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row['type'], true) : $row['type']) . '</td>';
-            echo '<td>' . ($row['output'] ? gamewiki::item($row['output'], $row['quantity']) : 'no output') . '</td>';
-            echo '<td><a href="craft.php?id=' . $row['id'] . '" class="btn">view craft</a></td>';
-            echo '</tr>';
-        }
-        echo '</table>';
+        ?>
+        <div class="itemgroup">
+            <h2><?php echo $mod ? 'mod:' . $mod : 'unknown'; ?></h2>
+
+            <div class="row">
+                <?php
+                foreach (array('crafting', 'cooking', 'fuel') as $type) {
+                    $pasteable = array();
+                    $sql = '
+                        SELECT id, mod, type, data, output, quantity
+                        FROM "craft" ' . $filter_join . '
+                        WHERE "type"="' . $type . '" AND mod="' . $mod . '" ' . $filter_sql . '
+                        ORDER BY output
+                    ';
+                    $q = $db->query($sql);
+                    $rows = array();
+                    while ($row = $q->fetchArray()) {
+                        $output_mod = true;
+                        $data = json_decode($row['data']);
+                        $rows[] = $row;
+                        if (isset($data->options->recipe)) {
+                            $pasteable[] = gamewiki::craft_recipe_paste($row['output'] . ' ' . $row['quantity'], $data->options->recipe, $row['type']);
+                        }
+                    }
+                    ?>
+                    <div class="span4">
+                        <h3><?php echo 'type:' . $type; ?></h3>
+                        <?php
+                        echo '<p style="text-align:right;"><a href="javascript:return false;" onclick="$(\'#pasteable_' . $type . '_' . $mod . '\').toggle();$(\'#table_' . $type . '_' . $mod . '\').toggle();">toggle pasteable</a></p>';
+                        echo '<pre id="pasteable_' . $type . '_' . $mod . '" style="display:none;">' . implode("\n\n", $pasteable) . '</pre>';
+                        echo '<table class="table" id="table_' . $type . '_' . $mod . '">';
+                        echo '<tr>';
+                        echo '<th>Recipe</th>';
+                        echo '<th>Output</th>';
+                        echo '<th style="width:100px;">&nbsp;</th>';
+                        echo '</tr>';
+                        foreach ($rows as $row) {
+                            $output_mod = true;
+                            $data = json_decode($row['data']);
+                            echo '<tr>';
+                            echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row['type'], true) : $row['type']) . '</td>';
+                            if ($type == 'fuel') {
+                                echo '<td>' . gamewiki::item('default:furnace_active', null, true) . '</td>';
+                            }
+                            else {
+                                echo '<td>' . ($row['output'] ? gamewiki::item($row['output'], $row['quantity'], true) : 'no output') . '</td>';
+                            }
+                            echo '<td><a href="craft.php?id=' . $row['id'] . '" class="btn">view craft</a></td>';
+                            echo '</tr>';
+                        }
+                        echo '</table>';
+                        ?>
+                    </div>
+                    <?php
+                }
+                ?>
+            </div>
+        </div>
+
+        <?php
         $contents = ob_get_clean();
         if ($output_mod)
             echo $contents;

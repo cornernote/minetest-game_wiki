@@ -51,24 +51,23 @@ require('globals.php');
             <div class="row">
                 <?php
                 foreach (array('tool', 'node', 'craft') as $type) {
+                    $sql = '
+                        SELECT "item"."id", "item"."name", "item"."image", "item"."description"
+                        FROM "item"
+                        ' . $filter_join . '
+                        WHERE "type"="' . $type . '"
+                        AND "mod"="' . $mod . '"
+                        ' . $filter_sql . '
+                        ORDER BY "item"."name"
+                    ';
+                    $q = $db->query($sql);
                     ?>
                     <div class="span4">
                         <h3><?php echo 'type:' . $type; ?></h3>
                         <?php
-                        $sql = '
-                            SELECT "item"."id", "item"."name", "item"."image", "item"."description"
-                            FROM "item"
-                            ' . $filter_join . '
-                            WHERE "type"="' . $type . '"
-                            AND "mod"="' . $mod . '"
-                            ' . $filter_sql . '
-                            ORDER BY "item"."name"
-                        ';
-                        $q = $db->query($sql);
                         while ($row = $q->fetchArray()) {
                             echo gamewiki::item($row['name'], null, true);
                             $output_mod = true;
-                            $output_type = true;
                         }
                         ?>
                     </div>

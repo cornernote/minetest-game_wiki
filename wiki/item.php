@@ -46,34 +46,56 @@ require('globals.php');
     }
 
     // created by crafts
-    $q = $db->query('SELECT id, type, data FROM "craft" WHERE output = "' . $name . '"');
-    $rows = array();
+    $output = false;
+    ob_start();
+    echo '<h2>Created By Crafts</h2>';
+    $q = $db->query('SELECT id, mod, type, output, quantity, data FROM "craft" WHERE output = "' . $name . '"');
+    echo '<table class="table">';
+    echo '<tr>';
+    echo '<th style="width:100px">Mod</th>';
+    echo '<th style="width:100px">Type</th>';
+    echo '<th>Recipe</th>';
+    echo '<th style="width:100px;">&nbsp;</th>';
+    echo '</tr>';
     while ($row_c = $q->fetchArray()) {
-        $data_c = json_decode($row_c['data']);
-        $rows[] = '<a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a><br/><br/>' . gamewiki::craft_recipe($data_c->options->recipe, $row_c['type']);
+        $data = json_decode($row_c['data']);
+        echo '<tr>';
+        echo '<td>' . $row_c['mod'] . '</td>';
+        echo '<td>' . $row_c['type'] . '</td>';
+        echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
+        echo '<td><a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a></td>';
+        echo '</tr>';
+        $output = true;
     }
-    if ($rows) {
-        echo '<h2>Created By Crafts</h2>';
-        echo implode('<hr/>', $rows);
-    }
+    echo '</table>';
+    $contents = ob_get_clean();
+    if ($output) echo $contents;
 
     // used for crafts
     $output = false;
     ob_start();
     echo '<h2>Used For Crafts</h2>';
-    $q = $db->query('SELECT id, mod, type, output, quantity FROM "craft_to_itemname" LEFT JOIN "craft" ON "craft"."id"="craft_to_itemname"."craft_id" WHERE name = "' . $name . '" ORDER BY output');
+    $q = $db->query('SELECT id, mod, type, output, quantity, data FROM "craft_to_itemname" LEFT JOIN "craft" ON "craft"."id"="craft_to_itemname"."craft_id" WHERE name = "' . $name . '" ORDER BY output');
     echo '<table class="table">';
     echo '<tr>';
     echo '<th style="width:100px">Mod</th>';
     echo '<th style="width:100px">Type</th>';
+    echo '<th>Recipe</th>';
     echo '<th>Output</th>';
-    echo '<th style="width:100px">&nbsp;</th>';
+    echo '<th style="width:100px;">&nbsp;</th>';
     echo '</tr>';
     while ($row_c = $q->fetchArray()) {
+        $data = json_decode($row_c['data']);
         echo '<tr>';
         echo '<td>' . $row_c['mod'] . '</td>';
         echo '<td>' . $row_c['type'] . '</td>';
-        echo '<td>' . ($row_c['output'] ? gamewiki::item($row_c['output'], $row_c['quantity']) : 'no output') . '</td>';
+        echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
+        if ($row_c['type'] == 'fuel') {
+            echo '<td>' . gamewiki::item('default:furnace_active', null, true) . '</td>';
+        }
+        else {
+            echo '<td>' . ($row_c['output'] ? gamewiki::item($row_c['output'], $row_c['quantity'], true) : 'no output') . '</td>';
+        }
         echo '<td><a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a></td>';
         echo '</tr>';
         $output = true;
@@ -93,6 +115,28 @@ require('globals.php');
         echo implode(' ', $rows);
     }
 
+    // used by aliases
+    $output = false;
+    ob_start();
+    echo '<h2>Used By Aliases</h2>';
+    $q = $db->query('SELECT id, name, mod FROM "alias" WHERE itemname = "' . $name . '"');
+    echo '<table class="table">';
+    echo '<tr>';
+    echo '<th style="width:100px;">Mod</th>';
+    echo '<th style="width:100px;">Alias</th>';
+    echo '</tr>';
+    while ($row_a = $q->fetchArray()) {
+        $output = true;
+        echo '<tr>';
+        echo '<td>' . $row_a['mod'] . '</td>';
+        echo '<td>' . $row_a['name'] . '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';
+    $contents = ob_get_clean();
+    if ($output) echo $contents;
+
+    // other data
     echo '<h2>Data</h2>';
     echo '<h3>mod:' . $row['mod'] . '</h3>';
     print '<pre>';

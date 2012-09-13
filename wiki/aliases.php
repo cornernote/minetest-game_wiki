@@ -41,8 +41,8 @@ require('globals.php');
 		$q = $db->query('SELECT id, mod, data FROM ' . $filter_join . ' "alias" WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
 		echo '<table class="table">';
 		echo '<tr>';
-		echo '<th width="100">Mod</th>';
-		echo '<th width="100">Alias</th>';
+		echo '<th style="width:100px;">Mod</th>';
+		echo '<th style="width:100px;">Alias</th>';
 		echo '<th>Item</th>';
 		echo '</tr>';
 		while ($row = $q->fetchArray()) {
