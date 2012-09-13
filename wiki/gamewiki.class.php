@@ -190,7 +190,14 @@ class gamewiki
 
         // no item found
         elseif (substr($name, 0, 6) == 'group:') {
-            $output .= '<a href="items.php?group=' . substr($name, 6) . '">' . $name . '</a>';
+            $group = substr($name, 6);
+            $name = str_replace(',', ' ', $group);
+            if ($small) {
+                $output .= '<p style="font-size:75%;text-align:center;line-height:1.1em;margin:0;padding:0;"><a href="items.php?group=' . $group . '" rel="tooltip" title="' . $name . '">view item group</a></p>';
+            }
+            else {
+                $output .= '<p><a href="items.php?group=' . $group . '">' . $name . '</a></p>';
+            }
         }
 
         // no item found
