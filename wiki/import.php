@@ -121,14 +121,13 @@ require('globals.php');
             $json = json_decode($contents);
             $data = SQLite3::escapeString($contents);
             $type = isset($json->options->type) ? $json->options->type : 'crafting';
-            $_output = isset($json->options->output) ? trim($json->options->output) : '';
-            $_output = explode(' ', $_output);
-            $output = SQLite3::escapeString(gamewiki::item_name($_output[0]));
-            $quantity = isset($_output[1]) ? (int)$_output[1] : 1;
+            $output = isset($json->options->output) ? trim($json->options->output) : '';
+            $quantity = gamewiki::item_quantity($output);
+            $output = SQLite3::escapeString(gamewiki::item_name($output));
             if ($db->query("INSERT INTO craft (id, mod, data, type, output, quantity) VALUES ('" . $id . "','" . $mod . "','" . $data . "','" . $type . "','" . $output . "','" . $quantity . "')")) {
                 $craft_id = $db->lastInsertRowID();
                 if (isset($json->options) && isset($json->options->recipe)) foreach (gamewiki::item_names($json->options->recipe) as $name)
-                    $db->query("INSERT INTO craft_to_itemname (craft_id, name) VALUES ('" . $craft_id . "','" . $name . "')");
+                    $db->query("INSERT INTO craft_to_itemname (craft_id, name) VALUES ('" . $craft_id . "','" . gamewiki::item_name($name) . "')");
                 unlink($filename);
             }
         }

@@ -250,6 +250,19 @@ class gamewiki
     }
 
     /**
+     * Returns an item quantity
+     *
+     * @param $name
+     * @return mixed
+     */
+    static function item_quantity($name)
+    {
+        $name = str_ireplace(array('tool ', 'node ', 'craft ', 'toolitem ', 'nodeitem ', 'craftitem ', '"'), '', $name);
+        $name = explode(' ', $name);
+        return isset($name[1]) ? $name[1] : 1;
+    }
+
+    /**
      * Returns a HTML table containing the recipe for a craft
      *
      * @param $recipe
