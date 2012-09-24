@@ -26,38 +26,38 @@ require('globals.php');
         $filters .= '[mod:' . $_GET['mod'] . ']';
         $filter_sql .= 'AND mod="' . SQLite3::escapeString($_GET['mod']) . '" ';
     }
-	?>
+    ?>
 
     <h1>Aliases
-		<small><?php echo $filters; ?></small>
-	</h1>
+        <small><?php echo $filters; ?></small>
+    </h1>
 
-	<?php
+    <?php
     $mods = gamewiki::get_mods();
     foreach ($mods as $mod) {
         $output_mod = false;
         ob_start();
-        echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
-		$q = $db->query('SELECT id, mod, data FROM ' . $filter_join . ' "alias" WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
-		echo '<table class="table">';
-		echo '<tr>';
-		echo '<th style="width:100px;">Mod</th>';
-		echo '<th style="width:100px;">Alias</th>';
-		echo '<th>Item</th>';
-		echo '</tr>';
-		while ($row = $q->fetchArray()) {
-			$output_mod = true;
-			$data = json_decode($row['data']);
-			echo '<tr>';
-			echo '<td>' . $row['mod'] . '</td>';
-			echo '<td>' . $data->name . '</td>';
-			echo '<td>' . gamewiki::item($data->options, null, true) . '</td>';
-			echo '</tr>';
-		}
-		echo '</table>';
+        echo '<h2>' . ($mod ? '<a href="mod.php?mod=' . $mod . '">' . $mod . '</a>' : 'unknown') . '</h2>';
+        $q = $db->query('SELECT id, mod, data FROM ' . $filter_join . ' "alias" WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
+        echo '<table class="table">';
+        echo '<tr>';
+        echo '<th style="width:100px;">Mod</th>';
+        echo '<th style="width:100px;">Alias</th>';
+        echo '<th>Item</th>';
+        echo '</tr>';
+        while ($row = $q->fetchArray()) {
+            $output_mod = true;
+            $data = json_decode($row['data']);
+            echo '<tr>';
+            echo '<td>' . $row['mod'] . '</td>';
+            echo '<td>' . $data->name . '</td>';
+            echo '<td>' . gamewiki::item($data->options, null, true) . '</td>';
+            echo '</tr>';
+        }
+        echo '</table>';
         $contents = ob_get_clean();
         if ($output_mod) echo $contents;
-	}
+    }
     ?>
 
 </div>

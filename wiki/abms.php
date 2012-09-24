@@ -37,7 +37,7 @@ require('globals.php');
     foreach ($mods as $mod) {
         $output_mod = false;
         ob_start();
-        echo '<h2>mod:' . ($mod ? $mod : 'no-mod') . '</h2>';
+        echo '<h2>' . ($mod ? '<a href="mod.php?mod=' . $mod . '">' . $mod . '</a>' : 'unknown') . '</h2>';
         $q = $db->query('SELECT id, mod, data FROM "abm" ' . $filter_join . ' WHERE mod="' . $mod . '" ' . $filter_sql . ' ORDER BY mod');
         echo '<table class="table">';
         echo '<tr>';

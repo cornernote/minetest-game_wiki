@@ -46,7 +46,7 @@ require('globals.php');
         ob_start();
         ?>
         <div class="itemgroup">
-            <h2><?php echo $mod ? 'mod:' . $mod : 'unknown'; ?></h2>
+            <h2><?php echo $mod ? '<a href="mod.php?mod=' . $mod . '">' . $mod . '</a>' : 'unknown'; ?></h2>
 
             <div class="row">
                 <?php
