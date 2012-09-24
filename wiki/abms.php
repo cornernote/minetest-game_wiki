@@ -21,7 +21,6 @@ require('globals.php');
 <div class="container">
 
     <?php
-    $mods = gamewiki::get_mods();
     $filters = $filter_sql = $filter_join = '';
     if (isset($_GET['mod'])) {
         $filters .= '[mod:' . $_GET['mod'] . ']';

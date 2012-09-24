@@ -59,7 +59,7 @@ require('globals.php');
 			foreach(gamewiki::get_mods() as $mod) {
 				?>
 				<tr>
-					<th><?php echo $mod; ?></th>
+                    <th><a href="mod.php?mod=<?php echo $mod; ?>"><?php echo $mod; ?></a></th>
 					<td><a href="items.php?mod=<?php echo $mod; ?>">Items</a></td>
 					<td><a href="crafts.php?mod=<?php echo $mod; ?>">Crafts</a></td>
 					<td><a href="abms.php?mod=<?php echo $mod; ?>">ABMs</a></td>
