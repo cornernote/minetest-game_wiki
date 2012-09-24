@@ -72,7 +72,7 @@ require('globals.php');
     echo '</table>';
 
     echo '<h2>Data</h2>';
-    echo '<h3>mod:' . $row['mod'] . '</h3>';
+    echo '<h3>mod:<a href="mod.php?mod=' . $row['mod'] . '">' . $row['mod'] . '</a></h3>';
     print '<pre>';
     print_r($data);
     print '</pre>';
