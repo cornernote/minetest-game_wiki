@@ -26,51 +26,28 @@ require('globals.php');
         <p>This site contains a list of all Items, Crafts, ABMs and Aliases.</p>
     </div>
 	
-	<div class="row">
-		<div class="span8">
-			<ul>
-				<li>
-					<h2><a href="items.php">Items
-						<small>tools, nodes, crafts</small>
-					</a></h2>
-				</li>
-				<li>
-					<h2><a href="crafts.php">Crafts
-						<small>learn to craft items</small>
-					</a></h2>
-				</li>
-				<li>
-					<h2><a href="abms.php">ABMs
-						<small>active block modifiers</small>
-					</a></h2>
-				</li>
-				<li>
-					<h2><a href="aliases.php">Aliases
-						<small>list of available item aliases</small>
-					</a></h2>
-				</li>
-			</ul>
-		</div>
-		<div class="span4">
-			
-			<h2>Mods</h2>
-			<table class="table">
-			<?php
-			foreach(gamewiki::get_mods() as $mod) {
-				?>
-				<tr>
-                    <th><a href="mod.php?mod=<?php echo $mod; ?>"><?php echo $mod; ?></a></th>
-					<td><a href="items.php?mod=<?php echo $mod; ?>">Items</a></td>
-					<td><a href="crafts.php?mod=<?php echo $mod; ?>">Crafts</a></td>
-					<td><a href="abms.php?mod=<?php echo $mod; ?>">ABMs</a></td>
-					<td><a href="aliases.php?mod=<?php echo $mod; ?>">Aliases</a></td>
-				</tr>
-				<?php
-			}
-			?>
-			</table>
-		</div>
-	</div>
+	<ul>
+		<li>
+			<h2><a href="items.php">Items
+				<small>tools, nodes, crafts</small>
+			</a></h2>
+		</li>
+		<li>
+			<h2><a href="crafts.php">Crafts
+				<small>learn to craft items</small>
+			</a></h2>
+		</li>
+		<li>
+			<h2><a href="abms.php">ABMs
+				<small>active block modifiers</small>
+			</a></h2>
+		</li>
+		<li>
+			<h2><a href="aliases.php">Aliases
+				<small>list of available item aliases</small>
+			</a></h2>
+		</li>
+	</ul>
 
 </div>
 <div id="footer"></div>
