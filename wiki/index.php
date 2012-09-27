@@ -28,6 +28,11 @@ require('globals.php');
 	
 	<ul>
 		<li>
+			<h2><a href="mods.php">Mods
+				<small>which provide items, crafts, abms or aliases</small>
+			</a></h2>
+		</li>
+		<li>
 			<h2><a href="items.php">Items
 				<small>tools, nodes, crafts</small>
 			</a></h2>
