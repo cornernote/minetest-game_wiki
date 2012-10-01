@@ -58,11 +58,11 @@ require('globals.php');
     echo '<th style="width:100px;">&nbsp;</th>';
     echo '</tr>';
     while ($row_c = $q->fetchArray()) {
-        $data = json_decode($row_c['data']);
+        $data_c = json_decode($row_c['data']);
         echo '<tr>';
         echo '<td>' . $row_c['mod'] . '</td>';
         echo '<td>' . $row_c['type'] . '</td>';
-        echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
+        echo '<td>' . (isset($data_c->options->recipe) ? gamewiki::craft_recipe($data_c->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
         echo '<td><a href="craft.php?id=' . $row_c['id'] . '" class="btn">view craft</a></td>';
         echo '</tr>';
         $output = true;
@@ -85,11 +85,11 @@ require('globals.php');
     echo '<th style="width:100px;">&nbsp;</th>';
     echo '</tr>';
     while ($row_c = $q->fetchArray()) {
-        $data = json_decode($row_c['data']);
+        $data_c = json_decode($row_c['data']);
         echo '<tr>';
         echo '<td>' . $row_c['mod'] . '</td>';
         echo '<td>' . $row_c['type'] . '</td>';
-        echo '<td>' . (isset($data->options->recipe) ? gamewiki::craft_recipe($data->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
+        echo '<td>' . (isset($data_c->options->recipe) ? gamewiki::craft_recipe($data_c->options->recipe, $row_c['type'], true) : $row_c['type']) . '</td>';
         if ($row_c['type'] == 'fuel') {
             echo '<td>' . gamewiki::item('default:furnace_active', null, true) . '</td>';
         }
