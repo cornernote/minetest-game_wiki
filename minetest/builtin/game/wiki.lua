@@ -50,7 +50,7 @@ wikiSaveJson = function(name, counter, data)
 	local modname = minetest.get_current_modname();
 	if modname==nil then modname="" end
 	local json = JSON:encode(data)
-	io.output(io.open(minetest.get_modpath("__builtin").."/wikidata/game/"..name.."."..modname.."."..counter..".json","w"))
+	io.output(io.open(minetest.get_builtin_path().."/wikidata/game/"..name.."."..modname.."."..counter..".json","w"))
 	io.write(json)
 	io.close()
 end
