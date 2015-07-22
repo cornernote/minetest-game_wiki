@@ -15,6 +15,7 @@ fleshy
 crumbly
 choppy
 snappy
+bendy
 liquid
 oddly_breakable_by_hand
 lava

@@ -219,6 +219,10 @@ while ($row = $q->fetchArray()) {
         $contents .= '</ul>';
     }
 
+    if (!$items && !$rows) {
+        continue;
+    }
+    
     file_put_contents($path . '/items/group-' . str_replace('_', '-', $row['group']) . '.md', $contents);
 }
 
