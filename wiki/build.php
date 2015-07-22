@@ -24,7 +24,7 @@ foreach (array('tool', 'craft', 'node') as $type) {
     $q = $GLOBALS['db']->query($sql);
     $contents .= '<ul class="list-items clearfix">' . "\n";
     while ($row = $q->fetchArray()) {
-        if (is_hidden($row['name'])) continue;
+        if (is_hidden_item($row['name'])) continue;
         $contents .= '<li>' . item($row['name']) . '</li>' . "\n";
     }
     $contents .= '</ul>' . "\n";
@@ -44,7 +44,7 @@ $sql = '
 ';
 $q = $GLOBALS['db']->query($sql);
 while ($row = $q->fetchArray()) {
-    if (is_hidden($row['name'])) continue;
+    if (is_hidden_item($row['name'])) continue;
     $contents = '---' . "\n";
     $contents .= 'layout: default' . "\n";
     $contents .= 'title: ' . (isset($row['description']) ? $row['description'] : $row['name']) . "\n";
@@ -96,6 +96,7 @@ while ($row = $q->fetchArray()) {
     $q2 = $GLOBALS['db']->query($sql);
     $groups = array();
     while ($row_g = $q2->fetchArray()) {
+        if (is_hidden_group($row_g['group'])) continue;
         $groups[] = "    <li>" . item('group:' . $row_g['group']) . "</li>\n";
     }
     if (!empty($groups)) {
@@ -137,7 +138,7 @@ while ($row_c = $q2->fetchArray()) {
     ';
     $q = $GLOBALS['db']->query($sql);
     $item = $q->fetchArray();
-    if (is_hidden($item['name'])) continue;
+    if (is_hidden_item($item['name'])) continue;
     if ($item) {
         $contents .= '<li>' . item($recipe) . '</li>' . "\n";
     } elseif (strpos($recipe, 'group:') !== false) {
@@ -161,6 +162,7 @@ $sql = '
 ';
 $q = $GLOBALS['db']->query($sql);
 while ($row = $q->fetchArray()) {
+    if (is_hidden_group($row['group'])) continue;
 
     $contents = '---' . "\n";
     $contents .= 'layout: default' . "\n";
@@ -182,7 +184,7 @@ while ($row = $q->fetchArray()) {
     $q2 = $GLOBALS['db']->query($sql);
     $items = array();
     while ($row_g = $q2->fetchArray()) {
-        if (is_hidden($row_g['name'])) continue;
+        if (is_hidden_item($row_g['name'])) continue;
         $items[] = "    <li>" . item($row_g['name']) . "</li>\n";
     }
     if ($items) {
@@ -287,7 +289,7 @@ foreach ($groups as $group => $outputs) {
     $q2 = $GLOBALS['db']->query($sql);
     $items = array();
     while ($row_g = $q2->fetchArray()) {
-        if (is_hidden($row_g['name'])) continue;
+        if (is_hidden_item($row_g['name'])) continue;
         $items[] = "    <li>" . item($row_g['name']) . "</li>\n";
     }
     if ($items) {
@@ -309,6 +311,7 @@ foreach ($groups as $group => $outputs) {
     $contents .= "\n\n" . '## Belongs to Groups' . "\n\n";
     $contents .= '<ul class="list-items clearfix">' . "\n";
     foreach ($_groups as $_group) {
+        if (is_hidden_group($row_g['group'])) continue;
         $contents .= "    <li>" . item('group:' . $_group) . "</li>\n";
     }
     $contents .= '</ul>' . "\n";

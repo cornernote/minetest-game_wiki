@@ -86,7 +86,7 @@ function group_image($group)
     $tooltip = ' data-toggle="tooltip" title="Group: ' . ucwords(str_replace('_', ' ', substr($group, 6))) . ' [group][' . substr($group, 6) . ']"';
     $images = array();
     while ($item = $q->fetchArray()) {
-        if (is_hidden($item['name'])) continue;
+        if (is_hidden_item($item['name'])) continue;
         $images[] = item_image($item, false);
     }
     while (count($images) < 3) {
@@ -221,7 +221,7 @@ function craft_furnace($recipe, $type)
     return $output;
 }
 
-function is_hidden($name){
+function is_hidden_item($name){
     static $hidden;
     if (empty($hidden)) {
         $hidden = explode("\n", file_get_contents('hidden_items.txt'));
@@ -230,4 +230,15 @@ function is_hidden($name){
         }
     }
     return (in_array(trim($name,':'), $hidden));
+}
+
+function is_hidden_group($name){
+    static $hidden;
+    if (empty($hidden)) {
+        $hidden = explode("\n", file_get_contents('hidden_groups.txt'));
+        foreach ($hidden as $k => $v) {
+            $hidden[$k] = trim(trim($v),':');
+        }
+    }
+    return (in_array($name, $hidden));
 }
