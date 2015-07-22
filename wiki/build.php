@@ -15,10 +15,11 @@ $contents .= '---' . "\n";
 foreach (array('tool', 'craft', 'node') as $type) {
     $contents .= "\n\n" . '## ' . ucfirst($type) . 's' . "\n\n";
     $sql = '
-        SELECT "item"."id", "item"."name", "item"."image", "item"."description"
+        SELECT "id", "name", "image", "description"
         FROM "item"
         WHERE "type"="' . $type . '"
-        ORDER BY "item"."name"
+        GROUP BY "name"
+        ORDER BY "name"
     ';
     $q = $GLOBALS['db']->query($sql);
     $contents .= '<ul class="list-items clearfix">' . "\n";
@@ -38,8 +39,8 @@ file_put_contents($path . '/items.md', $contents);
 $sql = '
 	SELECT "id", "name", "image", "description", "type"
 	FROM "item"
-	ORDER BY "name"
     GROUP BY "name"
+	ORDER BY "name"
 ';
 $q = $GLOBALS['db']->query($sql);
 while ($row = $q->fetchArray()) {
