@@ -8,6 +8,26 @@ function debug($debug)
     echo '</pre>';
 }
 
+function item_names($items)
+{
+    $_items = array();
+    if (is_array($items)) {
+        foreach ($items as $name) {
+            if (is_array($name)) {
+                $_items = array_merge($_items, item_names($name));
+            }
+            else {
+                $_items[] = $name;
+            }
+        }
+    }
+    else {
+        $_items[] = item_name($items);
+    }
+    foreach ($_items as $k => $v) if (!$v) unset($_items[$k]);
+    return array_unique($_items);
+}
+
 function item_image_file($item)
 {
     if (!empty($item['name'])) {
@@ -60,13 +80,13 @@ function group_image($group)
         FROM "group_to_itemname"
         LEFT JOIN "item" ON "item"."name" = "group_to_itemname"."name"
         WHERE "group_to_itemname"."group" = "' . substr($group, 6) . '"
-        AND "item"."hidden" = 0
         GROUP BY "group_to_itemname"."name"
     ';
     $q = $GLOBALS['db']->query($sql);
     $tooltip = ' data-toggle="tooltip" title="Group: ' . ucwords(str_replace('_', ' ', substr($group, 6))) . ' [group][' . substr($group, 6) . ']"';
     $images = array();
     while ($item = $q->fetchArray()) {
+        if (is_hidden($item['name'])) continue;
         $images[] = item_image($item, false);
     }
     while (count($images) < 3) {
@@ -199,4 +219,15 @@ function craft_furnace($recipe, $type)
     $output .= "        " . '<span>' . ($type == 'fuel' ? item($recipe) : '') . '</span>' . "\n";
     $output .= "    " . '</div>' . "\n";
     return $output;
+}
+
+function is_hidden($name){
+    static $hidden;
+    if (empty($hidden)) {
+        $hidden = explode("\n", file_get_contents('hidden_items.txt'));
+        foreach ($hidden as $k => $v) {
+            $hidden[$k] = trim(trim($v),':');
+        }
+    }
+    return (in_array(trim($name,':'), $hidden));
 }

@@ -2,7 +2,6 @@
 require('globals.php');
 $path = '/vagrant/minetest/minetest-skyblock-gh-pages';
 
-
 //
 // Build items.md
 //
@@ -19,12 +18,12 @@ foreach (array('tool', 'craft', 'node') as $type) {
         SELECT "item"."id", "item"."name", "item"."image", "item"."description"
         FROM "item"
         WHERE "type"="' . $type . '"
-        AND "hidden" = 0
         ORDER BY "item"."name"
     ';
     $q = $GLOBALS['db']->query($sql);
     $contents .= '<ul class="list-items clearfix">' . "\n";
     while ($row = $q->fetchArray()) {
+        if (is_hidden($row['name'])) continue;
         $contents .= '<li>' . item($row['name']) . '</li>' . "\n";
     }
     $contents .= '</ul>' . "\n";
@@ -39,11 +38,11 @@ file_put_contents($path . '/items.md', $contents);
 $sql = '
 	SELECT "id", "name", "image", "description", "type"
 	FROM "item"
-	WHERE "hidden" = 0
 	ORDER BY "name"
 ';
 $q = $GLOBALS['db']->query($sql);
 while ($row = $q->fetchArray()) {
+    if (is_hidden($row['name'])) continue;
     $contents = '---' . "\n";
     $contents .= 'layout: default' . "\n";
     $contents .= 'title: ' . (isset($row['description']) ? $row['description'] : $row['name']) . "\n";
@@ -107,6 +106,7 @@ while ($row = $q->fetchArray()) {
     file_put_contents($path . '/items/' . str_replace(array(':', '_'), '-', trim($row['name'], ':')) . '.md', $contents);
 }
 
+
 //
 // Build items/fire-basic-flame.md
 //
@@ -130,12 +130,12 @@ while ($row_c = $q2->fetchArray()) {
     $sql = '
         SELECT "id", "name", "image", "description", "type"
         FROM "item"
-        WHERE "hidden" = 0
-        AND ("name" = "' . $recipe . '" OR "name" = ":' . $recipe . '")
+        WHERE ("name" = "' . $recipe . '" OR "name" = ":' . $recipe . '")
         ORDER BY "name"
     ';
     $q = $GLOBALS['db']->query($sql);
     $item = $q->fetchArray();
+    if (is_hidden($item['name'])) continue;
     if ($item) {
         $contents .= '<li>' . item($recipe) . '</li>' . "\n";
     } elseif (strpos($recipe, 'group:') !== false) {
@@ -174,13 +174,13 @@ while ($row = $q->fetchArray()) {
         FROM "group_to_itemname"
         LEFT JOIN "item" ON "item"."name" = "group_to_itemname"."name"
         WHERE "group_to_itemname"."group" = "' . $row['group'] . '"
-        AND "item"."hidden" = 0
         GROUP BY "group_to_itemname"."name"
         ORDER BY "group_to_itemname"."name"
     ';
     $q2 = $GLOBALS['db']->query($sql);
     $items = array();
     while ($row_g = $q2->fetchArray()) {
+        if (is_hidden($row_g['name'])) continue;
         $items[] = "    <li>" . item($row_g['name']) . "</li>\n";
     }
     if ($items) {
@@ -280,12 +280,12 @@ foreach ($groups as $group => $outputs) {
         SELECT "item"."name"
         FROM "item"
         ' . implode(' ', $joins) . '
-        WHERE "item"."hidden" = 0
-        AND ' . implode(' AND ', $wheres) . '
+        WHERE ' . implode(' AND ', $wheres) . '
     ';
     $q2 = $GLOBALS['db']->query($sql);
     $items = array();
     while ($row_g = $q2->fetchArray()) {
+        if (is_hidden($row_g['name'])) continue;
         $items[] = "    <li>" . item($row_g['name']) . "</li>\n";
     }
     if ($items) {
