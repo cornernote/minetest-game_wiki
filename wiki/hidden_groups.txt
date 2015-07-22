@@ -7,7 +7,10 @@ igniter
 leafdecay
 leafdecay_drop
 puts_out_fire
+dig_immediate
+flammable
 melty
+cracky
 fleshy
 crumbly
 choppy
@@ -19,3 +22,6 @@ water
 mesecon
 level
 soil
+field
+grassland
+pane
