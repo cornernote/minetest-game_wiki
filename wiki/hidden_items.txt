@@ -1,3 +1,4 @@
+default:cloud
 default:furnace_active
 default:grass_2
 default:grass_3
