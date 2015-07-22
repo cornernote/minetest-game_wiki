@@ -39,6 +39,7 @@ $sql = '
 	SELECT "id", "name", "image", "description", "type"
 	FROM "item"
 	ORDER BY "name"
+    GROUP BY "name"
 ';
 $q = $GLOBALS['db']->query($sql);
 while ($row = $q->fetchArray()) {
