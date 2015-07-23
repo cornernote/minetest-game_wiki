@@ -8,6 +8,7 @@ default:water_flowing
 default:lava_flowing
 default:nyancat
 default:nyancat_rainbow
+default:dirt_with_grass_footsteps
 :
 :xpanes:pane_1
 :xpanes:pane_2
