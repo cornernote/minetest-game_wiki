@@ -8,7 +8,10 @@ default:water_flowing
 default:lava_flowing
 default:nyancat
 default:nyancat_rainbow
+default:dirt_with_snow
+default:dirt_with_grass
 default:dirt_with_grass_footsteps
+default:dry_shrub
 :
 :xpanes:pane_1
 :xpanes:pane_2
@@ -40,6 +43,8 @@ default:dirt_with_grass_footsteps
 :xpanes:bar_13
 :xpanes:bar_14
 :xpanes:bar_15
+farming:soil
+farming:desert_sand_soil
 farming:soil_wet
 farming:desert_sand_soil_wet
 farming:wheat_1
