@@ -71,7 +71,7 @@ while ($row = $q->fetchArray()) {
     $rows = array();
     while ($row_c = $q2->fetchArray()) {
         if ($row_c['type'] == 'fuel') {
-            $rows[] = item('fire:basic_flame');
+            //$rows[] = item('fire:basic_flame');
         } else {
             $rows[] = $row_c['output'] ? item($row_c['output'], $row_c['quantity']) : print_r($row_c, true);
         }
@@ -113,6 +113,7 @@ while ($row = $q->fetchArray()) {
 //
 // Build items/fire-basic-flame.md
 //
+/*
 $contents = '---' . "\n";
 $contents .= 'layout: default' . "\n";
 $contents .= 'title: Fire' . "\n";
@@ -148,7 +149,7 @@ while ($row_c = $q2->fetchArray()) {
 $contents .= '</ul>' . "\n";
 
 file_put_contents($path . '/items/fire-basic-flame.md', $contents);
-
+*/
 
 //
 // Build items/group-*.md
