@@ -29,3 +29,4 @@ pane
 desert
 vessel
 door
+hot
