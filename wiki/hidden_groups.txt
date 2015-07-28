@@ -30,3 +30,6 @@ desert
 vessel
 door
 hot
+bagslots
+unbreakable
+book

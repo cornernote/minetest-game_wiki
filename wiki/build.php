@@ -316,7 +316,7 @@ foreach ($groups as $group => $outputs) {
     $contents .= "\n\n" . '## Belongs to Groups' . "\n\n";
     $contents .= '<ul class="list-items clearfix">' . "\n";
     foreach ($_groups as $_group) {
-        if (is_hidden_group($row_g['group'])) continue;
+        if (is_hidden_group($_group)) continue;
         $contents .= "    <li>" . item('group:' . $_group) . "</li>\n";
     }
     $contents .= '</ul>' . "\n";
